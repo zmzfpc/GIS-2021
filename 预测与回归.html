@@ -1,0 +1,170 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=7" />
+    <title>MaxEnt模型与回归模型</title>
+    <link rel="stylesheet"
+        href="http://serverapi.arcgisonline.com/jsapi/arcgis/2.6/js/dojo/dijit/themes/tundra/tundra.css">
+    <link rel="stylesheet" href="http://local.mzzhu.com:18080/arcgis/rest/static/jsapi.css">
+    <script type="text/javascript"> var djConfig = { parseOnLoad: true };
+    </script>
+    <script type="text/javascript" src="http://serverapi.arcgisonline.com/jsapi/arcgis/?v=2.6"> </script>
+    <script>
+        dojo.require("dijit.layout.BorderContainer");
+        dojo.require("dijit.layout.ContentPane");
+        dojo.require("esri.map");
+        var map, visible = [], setLayerVisibility, layer;
+
+        function init() {
+            map = new esri.Map("map");
+            layer = new esri.layers.ArcGISDynamicMapServiceLayer("http://local.mzzhu.com:18080/arcgis/rest/services/zmzf/MapServer");
+            if (layer.loaded) {
+                loadLayerList();
+            } else {
+                dojo.connect(layer, "onLoad", loadLayerList);
+            }
+            map.addLayer(layer, 1);
+            var chartLayer = new esri.layers.GraphicsLayer({ "id": "chartLayer" });
+            map.addLayer(chartLayer, 2);
+            var legendPar = {
+                map: map,
+                arrangment: esri.dijit.Legend.ALIGN_RIGHT,
+                autoUpdate: true
+            };
+
+            var legendDijit = new esri.dijit.Legend(legendPar, "legendDiv");
+            legendDijit.startup();
+        }
+
+        function none(){
+            dojo.byId("legend").src="";
+            dojo.byId("legend").style="";
+        }
+        function qyfb(){
+            dojo.byId("legend").src="assets/qyfb.png";
+            dojo.byId("legend").style="height: 175px;width: 100px;"
+        }
+        function qyfz(){
+            dojo.byId("legend").src="assets/qyfz.png";
+            dojo.byId("legend").style="height: 190px;width: 160px;"
+        }
+        function h(){
+            dojo.byId("legend").src="assets/h.png";
+            dojo.byId("legend").style="height: 90px;width: 110px;"
+
+        }
+        function qcz(){
+            dojo.byId("legend").src="assets/qcz.png";
+            dojo.byId("legend").style="height: 330px;width: 155px;"
+        }
+        
+        function caculate(n) {
+            return n
+        }
+        function loadLayerList() {
+            var html = ""//!!!
+            var html1 = ""
+            var infos = layer.layerInfos;
+            for (var i = 0, length = infos.length; i < length; i++) {       //!!!
+                var info = infos[i];
+                //图层默认显示的话就把图层id添加到visible  
+                if (info.defaultVisibility) {
+                    visible.push(info.id);
+                }
+                if (i > 20) {
+                    html1 = html1 + "<div><input id='" + info.id + "' name='layerList' class='listCss' type='checkbox' value='checkbox' onclick='setLayerVisibility()' " + (info.defaultVisibility ? "checked" : "") + " />" + info.name + "</div>";
+                }
+                else {
+                    html = html + "<div><input id='" + info.id + "' name='layerList' class='listCss' type='checkbox' value='checkbox' onclick='setLayerVisibility()' " + (info.defaultVisibility ? "checked" : "") + " />" + info.name + "</div>";
+                }
+                //输出图层列表的html  
+                //html = html + "<div><input id='" + info.id + "' name='layerList' class='listCss' type='checkbox' value='checkbox' οnclick='hello()' " + (info.defaultVisibility ? "checked" : "") + " />" + info.name + "</div>";
+
+
+            }
+
+            //设置可视图层  
+            layer.setVisibleLayers(visible);
+            //在右边显示图层名列表  
+            dojo.byId("toc").innerHTML = html;
+            // dojo.byId("toc1").innerHTML = html2;
+        }
+
+        function setLayerVisibility() {
+            //用dojo.query获取css为listCss的元素数组  
+            var inputs = dojo.query(".listCss");
+            visible = [];
+            //对checkbox数组进行变量把选中的id添加到visible  
+            for (var i = 0; i < inputs.length; i++) {
+                if (inputs[i].checked) {
+                    visible.push(inputs[i].id);
+                }
+            }
+            //设置可视图层  
+            layer.setVisibleLayers(visible);
+        }
+        dojo.addOnLoad(init)
+        // dojo.connect(layer, 'onload', loadLayerList);
+        //dojo.connect(map, 'onmousemove', showCoordinates)
+    </script>
+</head>
+
+<body>
+    <div dojotype="dijit.layout.BorderContainer" design="headline" gutters="true"
+        style="width: 100%; height: 100%; margin: 0;">
+        <!-- <div dojotype="dijit.layout.ContentPane" region="top" id="navtable">
+            <div style="float:left;" id="breadcrumbs">ArcGIS JavaScript API: SampleWorldCities</div>
+            <div style="float:right;" id="help">
+                Built using the <a href="http://help.arcgis.com/en/webapi/javascript/arcgis/">ArcGIS JavaScript API</a>
+            </div>
+        </div> -->
+        <div id="map" dojotype="dijit.layout.ContentPane" region="center">
+        </div>
+        <div id="toc"
+            style="position: absolute; left: 10px; bottom: 20px; border: 1px solid #9c9c9c; background: #fff;opacity:0.5; width: 100px; height: auto; z-index: 99;padding: 10px;">
+        </div>
+        <!-- <div id="toc1"
+            style="position: absolute; right: 10px; bottom: 20px; border: 1px solid #9c9c9c; background: #fff;opacity:0.5; width: 250px; height: auto; z-index: 99;padding: 10px;"> -->
+        </div> -->
+        <div id="cacu" style="position: absolute; right: 10px; bottom: 20px; border: 1px solid #9c9c9c; background: #fff;opacity:0.5; width: 350px; height: auto; z-index: 99;padding: 10px;">
+            请输入您要查询与人民广场的距离（米）:
+            <input id="content" type="text" />
+            <input type="button" id="btn" value="查询" onclick="show()">
+        </div>
+        <div id="legendDiv" style="position: absolute; right: 10px; top: 10px; opacity:0.8; z-index: 99;padding: 10px;">
+            <img id="legend" src="" />
+        </div>
+        <div id="legendRadio" style="position: absolute; right: 10px; bottom: 120px; border: 1px solid #9c9c9c; background: #fff;opacity:0.5; width: 190px; height: auto; z-index: 99;padding: 10px;">
+            <input id='legend1' name='legend' type='radio' onclick='none()' checked/>无图例
+            <br>
+            <input id='legend2' name='legend' type='radio' onclick='qyfb()'/>文化产业分布热力图
+            <br>
+            <input id='legend3' name='legend' type='radio' onclick='qyfz()'/>两区文化企业发展预测
+            <br>
+            <input id='legend4' name='legend' type='radio' onclick='h()'/>环内文化企业占比
+            <br>
+            <input id='legend5' name='legend' type='radio' onclick='qcz()'/>各区文化企业比例
+        </div>
+    </div>
+
+</body>
+<script>
+    function show() {
+        var oText = document.getElementById("content");
+        var n=oText.value
+        var x=Math.abs(n-3800)/108.859468456536465;
+        s=6.50407320765665;
+        n=Math.ceil((53071/(s*(x)*Math.sqrt(2*Math.PI))) * Math.exp(-1/2*(Math.log(x)/s)**2));
+        var return1="<div>由拟合函数生成与人民广场距离为"+oText.value+"米的企业有"+n+"家。";
+        return1=return1+"<input type=\"button\" id=\"btn\" value=\"返回\" onclick=\"show1()\"></div>"
+        dojo.byId("cacu").innerHTML = return1;
+    }
+    function show1(){
+        return1="请输入您要查询的与人民广场距离:<input id=\"content\" type=\"text\" /><input type=\"button\" id=\"btn\" value=\"查询\" onclick=\"show()\">"
+        dojo.byId("cacu").innerHTML = return1;
+    }
+</script>
+
+</html>

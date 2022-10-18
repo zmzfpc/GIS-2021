@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arcgis Api Test</title>
+    <!-- 引入acrgis api -->
+    <link rel="stylesheet" href="https://js.arcgis.com/4.19/esri/themes/light/main.css">
+    <script src="https://js.arcgis.com/4.19/"></script>
+    <script>
+        //    require(["esri/config","esri/Map", "esri/views/MapView"], function (esriConfig,Map, MapView) {
+        //         esriConfig.apiKey = "c2882f312aee856dc418c1a0b3923679";
+        //         // var layer = new TileLayer({
+        //         //     url: "http://local.mzzhu.com:18080/arcgis/rest/services/SampleWorldCities/MapServer" //自己的底图地址
+        //         // });
+        //         var map = new Map({
+        //             basemap: "arcgis-topographic",
+        //             // layers: [layer]
+        //         })
+        //         const view = new MapView({
+        //             map: map,
+        //             // center: [-118.805, 34.027], // Longitude, latitude
+        //             zoom: 13, // Zoom level
+        //             container: "viewDiv" // Div element
+        //         });
+        //     });
+        require(["esri/config", "esri/Map", "esri/views/MapView","esri/layers/FeatureLayer"], function (esriConfig, Map, MapView,FeatureLayer) {
+
+            esriConfig.apiKey = "c2882f312aee856dc418c1a0b3923679";
+
+            const map = new Map({
+                basemap: "", // Basemap layer service
+            });
+
+            const trailheadsLayer = new FeatureLayer({
+                url: "http://local.mzzhu.com:18080/arcgis/rest/services/SampleWorldCities/MapServer"
+            })
+            map.add(trailheadsLayer)
+
+            const view = new MapView({
+                map: map,
+                // center: [-118.805, 34.027], // Longitude, latitude
+                zoom: 13, // Zoom level
+                container: "viewDiv" // Div element
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <div id="viewDiv"></div>
+</body>
+<style>
+    html,
+    body,
+    #viewDiv {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+    }
+</style>
+
+</html>

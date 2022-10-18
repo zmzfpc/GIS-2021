@@ -1,0 +1,177 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=7" />
+    <title>ArcGIS JavaScript API: SampleWorldCities</title>
+    <link rel="stylesheet"
+        href="http://serverapi.arcgisonline.com/jsapi/arcgis/2.6/js/dojo/dijit/themes/tundra/tundra.css">
+    <link rel="stylesheet" href="http://local.mzzhu.com:18080/arcgis/rest/static/jsapi.css">
+    <style type="text/css">
+    </style>
+    <script type="text/javascript"> var djConfig = { parseOnLoad: true };
+    </script>
+    <script type="text/javascript" src="http://serverapi.arcgisonline.com/jsapi/arcgis/?v=2.6"> </script>
+    <script>
+        dojo.require("dijit.layout.BorderContainer");
+        dojo.require("dijit.layout.ContentPane");
+        dojo.require("esri.map");
+        dojo.require("esri.dijit.Legend");
+        var map, visible = [], setLayerVisibility, layer;
+
+        function init() {
+            map = new esri.Map("map");
+            layer = new esri.layers.ArcGISDynamicMapServiceLayer("http://localhost:6080/arcgis/rest/services///lxp/MapServer");
+            if (layer.loaded) {
+                loadLayerList();
+            } else {
+                dojo.connect(layer, "onLoad", loadLayerList);
+            }
+            map.addLayer(layer, 1);
+            var chartLayer = new esri.layers.GraphicsLayer({ "id": "chartLayer" });
+            map.addLayer(chartLayer, 2);
+            //图例：
+            // var legendPar = {
+            //     map: map,
+            //     arrangment: esri.dijit.Legend.ALIGN_RIGHT,
+            //     autoUpdate: true
+            // };
+            // console.log(legendPar);
+            // var legendDijit = new esri.dijit.Legend(legendPar, "legendDiv");
+            // legendDijit.startup();
+            
+        }
+
+        // function showCoordinates(e) {
+        //     var mp = e.mapPoint;
+        //     var screenPt = map.toScreen(mp);
+        //     var str = "<p style=\"display:block\">" + "屏幕坐标(x,y):" + "(" + screenPt.x +
+        //         "," + screenPt.y + ")" + "</p>";
+        //     dojo.byId("position").innerHTML = str + "地图坐标(x,y):" + "(" + mp.x + ", " +
+        //         mp.y + ")";
+        // }
+
+        function loadLayerList() {
+            var html = ""//!!!
+            var html1 = ""
+            var infos = layer.layerInfos;
+            for (var i = 0, length = infos.length; i < length; i++) {       //!!!
+                var info = infos[i];
+                //图层默认显示的话就把图层id添加到visible  
+                if (info.defaultVisibility) {
+                    visible.push(info.id);
+                }
+                if(i>20){
+                    html1 = html1 + "<div><input id='" + info.id + "' name='layerList' class='listCss' type='checkbox' value='checkbox' onclick='setLayerVisibility()' "+(info.defaultVisibility ? "checked" : "") + " />" + info.name + "</div>";
+                }
+                else{
+                    html = html + "<div><input id='" + info.id + "' name='layerList' class='listCss' type='checkbox' value='checkbox' onclick='setLayerVisibility()' "+(info.defaultVisibility ? "checked" : "") + " />" + info.name + "</div>";
+                }
+                //输出图层列表的html  
+                //html = html + "<div><input id='" + info.id + "' name='layerList' class='listCss' type='checkbox' value='checkbox' οnclick='hello()' " + (info.defaultVisibility ? "checked" : "") + " />" + info.name + "</div>";
+                
+
+            }
+            //设置可视图层  
+            layer.setVisibleLayers(visible);
+            //在右边显示图层名列表  
+            dojo.byId("toc").innerHTML = html;
+            dojo.byId("toc1").innerHTML = html1;
+        }
+
+        function setLayerVisibility() {
+            //用dojo.query获取css为listCss的元素数组  
+            var inputs = dojo.query(".listCss");
+            visible = [];
+            //对checkbox数组进行变量把选中的id添加到visible  
+            for (var i = 0; i < inputs.length; i++) {
+                if (inputs[i].checked) {
+                    visible.push(inputs[i].id);
+                }
+            }
+            //设置可视图层  
+            layer.setVisibleLayers(visible);
+        }
+
+        function none(){
+            dojo.byId("legend").src="";
+        }
+        function tjculture(){
+            dojo.byId("legend").src="tjculture.jpg";
+        }
+        function hotelprice(){
+            dojo.byId("legend").src="hotelprice.jpg";
+        }
+        function lnone(){
+            dojo.byId("label").src="";
+        }
+        function culN(){
+            dojo.byId("label").src="cultureNum.png";
+        }
+        function culF(){
+            dojo.byId("label").src="cultureFinance.png";
+        }
+        function tnone(){
+            dojo.byId("txt").style.display="none";
+        }
+        function tappear(){
+            dojo.byId("txt").style.display="block";
+        }
+        dojo.addOnLoad(init)
+        // dojo.connect(layer, 'onload', loadLayerList);
+        //dojo.connect(map, 'onmousemove', showCoordinates)
+    </script>
+</head>
+
+<body>
+    <!--<div id="map">
+        <div id="toc" style="position: absolute; left: 10px; bottom: 20px; border: 1px solid #9c9c9c; background: #fff; width: 100px; height: auto; z-index: 99;padding: 10px;"></div>
+    </div>
+    <div>
+        <input type="checkbox" onclick="hello()"/>test
+    </div>-->
+    <div dojotype="dijit.layout.BorderContainer" design="headline" gutters="true"
+        style="width: 100%; height: 100%; margin: 0;">
+        <!-- <div dojotype="dijit.layout.ContentPane" region="top" id="navtable">
+            <div style="float:left;" id="breadcrumbs">ArcGIS JavaScript API: SampleWorldCities</div>
+            <div style="float:right;" id="help">
+                Built using the <a href="http://help.arcgis.com/en/webapi/javascript/arcgis/">ArcGIS JavaScript API</a>
+            </div>
+        </div> -->
+        <div id="map" dojotype="dijit.layout.ContentPane" region="center">
+            
+        </div>
+        <div id="toc" style="position: absolute; left: 10px; bottom: 20px; border: 1px solid #9c9c9c; background: #fff;opacity:0.8; width: 100px; height: auto; z-index: 99;padding: 10px;"></div>
+        <div id="toc1" style="position: absolute; left: 150px; bottom: 20px; border: 1px solid #9c9c9c; background: #fff;opacity:0.8; width: 100px; height: auto; z-index: 99;padding: 10px;"></div>
+        <!-- <div id="legendDiv" style="position: absolute; left: 300px; bottom: 20px; border: 1px solid #9c9c9c; background: #fff;opacity:0.8; width: 100px; height: auto; z-index: 99;padding: 10px;"></div> -->
+        <div id="legendDiv" style="position: absolute; left: 300px; bottom: 300px; opacity:1; z-index: 99;padding: 10px;">
+            <img id="legend" src="" />
+        </div>
+        <div id="labelDiv" style="position: absolute; right: 30px; top: 3px; opacity:1; z-index: 99;padding: 10px;">
+            <img id="label" src="" />
+        </div>
+        <div id="legendRadio" style="position: absolute; right: 150px; bottom: 20px; border: 1px solid #9c9c9c; background: #fff;opacity:0.8; width: 90px; height: auto; z-index: 99;padding: 10px;">
+            <input id='legend1' name='legend' type='radio' onclick='none()' checked/>无图例
+            <input id='legend2' name='legend' type='radio' onclick='tjculture()'/>文化产业
+            <input id='legend3' name='legend' type='radio' onclick='hotelprice()'/>住所价格
+        </div>
+        <div id="labelRadio" style="position: absolute; right: 30px; bottom: 20px; border: 1px solid #9c9c9c; background: #fff;opacity:0.8; width: 90px; height: auto; z-index: 99;padding: 10px;">
+            <input id='label1' name='label' type='radio' onclick='lnone()' checked/>无表格
+            <input id='label2' name='label' type='radio' onclick='culN()'/>产业数量
+            <input id='label3' name='label' type='radio' onclick='culF()'/>产业经济
+        </div>
+        <div id="txt" style="display:none;position: absolute; right: 30px; top: 3px; opacity:1; z-index: 99;padding: 10px;">
+            文化产业数量：599个<br/>
+            占比：18.06%<br/>
+            杨浦区文化创意产业增加值：223.57亿元<br/>
+            环同济经济圈文化创意产业增加值：107.4亿元  <br/> 
+        </div>
+        <div id="txtRadio" style="position: absolute; right: 30px; bottom: 120px; border: 1px solid #9c9c9c; background: #fff;opacity:0.8; width: 90px; height: auto; z-index: 99;padding: 10px;">
+            <input id='txt1' name='txtR' type='radio' onclick='tnone()' checked/>不显示
+            <input id='txt2' name='txtR' type='radio' onclick='tappear()'/>显示
+        </div>
+    </div>
+</body>
+
+</html>
